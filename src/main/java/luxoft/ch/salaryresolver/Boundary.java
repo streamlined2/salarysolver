@@ -2,19 +2,11 @@ package luxoft.ch.salaryresolver;
 
 import java.util.Objects;
 
-public class Boundary implements Comparable<Boundary> {
+public record Boundary(Salary value, Kind kind) {
 
 	public enum Kind {
-		STRICT() {
-			public String minToString() {
-				return "(";
-			}
 
-			public String maxToString() {
-				return ")";
-			}
-		},
-		NON_STRICT() {
+		INCLUSIVE() {
 			public String minToString() {
 				return "[";
 			}
@@ -22,50 +14,31 @@ public class Boundary implements Comparable<Boundary> {
 			public String maxToString() {
 				return "]";
 			}
+		},
+
+		EXCLUSIVE() {
+			public String minToString() {
+				return "(";
+			}
+
+			public String maxToString() {
+				return ")";
+			}
 		};
 
 		public abstract String minToString();
 
 		public abstract String maxToString();
 
-	}
-
-	private static final int MINIMUM = 1;
-	private static final int MAXIMUM = 10_000;
-
-	private Integer value;
-	private Kind kind;
-
-	public Boundary(Integer value, Kind kind) {
-		if (value < MINIMUM) {
-			throw new IllegalArgumentException("salary %d must be greater or equal to %d".formatted(value, MINIMUM));
+		public static Kind getKindFor(Relation relation) {
+			return Relation.isStrict(relation) ? EXCLUSIVE : INCLUSIVE;
 		}
-		if (value > MAXIMUM) {
-			throw new IllegalArgumentException("salary %d must be less or equal to %d".formatted(value, MAXIMUM));
-		}
-		this.value = value;
-		this.kind = kind;
-	}
 
-	public Integer getValue() {
-		return value;
-	}
-
-	public void setValue(Integer value) {
-		this.value = value;
-	}
-
-	public Kind getKind() {
-		return kind;
-	}
-
-	public void setKind(Kind kind) {
-		this.kind = kind;
 	}
 
 	@Override
 	public String toString() {
-		return "%d".formatted(value);
+		return value.toString();
 	}
 
 	@Override
@@ -76,14 +49,31 @@ public class Boundary implements Comparable<Boundary> {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Boundary boundary) {
-			return compareTo(boundary) == 0;
+			return Objects.equals(value, boundary.value) && kind == boundary.kind;
 		}
 		return false;
 	}
 
-	@Override
-	public int compareTo(Boundary boundary) {
-		return Integer.compare(value, boundary.value);
+	public Salary getMinimalSalary() {
+		return switch (kind) {
+		case EXCLUSIVE -> value().getGreaterBy(1);
+		case INCLUSIVE -> value();
+		};
+	}
+
+	public Salary getMaximalSalary() {
+		return switch (kind) {
+		case EXCLUSIVE -> value().getLesserBy(1);
+		case INCLUSIVE -> value();
+		};
+	}
+	
+	public static Boundary getMinimum() {
+		return new Boundary(new Salary(Salary.MINIMUM_VALUE), Kind.INCLUSIVE);
+	}
+
+	public static Boundary getMaximum() {
+		return new Boundary(new Salary(Salary.MAXIMUM_VALUE), Kind.INCLUSIVE);
 	}
 
 }

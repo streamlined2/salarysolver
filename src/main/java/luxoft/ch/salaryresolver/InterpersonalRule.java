@@ -1,6 +1,7 @@
 package luxoft.ch.salaryresolver;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class InterpersonalRule extends Rule {
 
@@ -16,6 +17,11 @@ public class InterpersonalRule extends Rule {
 	}
 
 	@Override
+	public Stream<Person> getRelatedPersons() {
+		return Stream.of(person, anotherPerson);
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(person, relation, anotherPerson);
 	}
@@ -28,5 +34,5 @@ public class InterpersonalRule extends Rule {
 		}
 		return false;
 	}
-	
+
 }

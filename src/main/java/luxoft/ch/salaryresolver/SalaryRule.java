@@ -2,16 +2,16 @@ package luxoft.ch.salaryresolver;
 
 import java.util.Objects;
 
-public class BoundaryRule extends Rule {
+public class SalaryRule extends Rule {
 
-	private final Boundary salary;
+	private final Salary salary;
 
-	public BoundaryRule(String name, Relation relation, Boundary salary) {
+	public SalaryRule(String name, Relation relation, Salary salary) {
 		super(name, relation);
 		this.salary = salary;
 	}
 
-	public Boundary getSalary() {
+	public Salary getSalary() {
 		return salary;
 	}
 
@@ -22,7 +22,7 @@ public class BoundaryRule extends Rule {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof BoundaryRule rule) {
+		if (obj instanceof SalaryRule rule) {
 			return Objects.equals(person, rule.person) && Objects.equals(relation, rule.relation)
 					&& Objects.equals(salary, rule.salary);
 		}

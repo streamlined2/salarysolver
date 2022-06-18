@@ -1,6 +1,6 @@
 package luxoft.ch.salaryresolver;
 
-import java.util.Objects;
+import java.util.stream.Stream;
 
 public abstract class Rule {
 
@@ -18,6 +18,10 @@ public abstract class Rule {
 
 	public Relation getRelation() {
 		return relation;
+	}
+
+	public Stream<Person> getRelatedPersons() {
+		return Stream.of(person);
 	}
 
 }
