@@ -6,9 +6,9 @@ public class SalaryRule extends Rule {
 
 	private final Salary salary;
 
-	public SalaryRule(String name, Relation relation, Salary salary) {
+	public SalaryRule(String name, Relation relation, Integer value) {
 		super(name, relation);
-		this.salary = salary;
+		this.salary = new Salary(value);
 	}
 
 	public Salary getSalary() {

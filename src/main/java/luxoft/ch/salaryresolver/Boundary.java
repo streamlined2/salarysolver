@@ -31,7 +31,7 @@ public record Boundary(Salary value, Kind kind) {
 		public abstract String maxToString();
 
 		public static Kind getKindFor(Relation relation) {
-			return Relation.isStrict(relation) ? EXCLUSIVE : INCLUSIVE;
+			return relation.isStrict() ? EXCLUSIVE : INCLUSIVE;
 		}
 
 	}
@@ -67,7 +67,7 @@ public record Boundary(Salary value, Kind kind) {
 		case INCLUSIVE -> value();
 		};
 	}
-	
+
 	public static Boundary getMinimum() {
 		return new Boundary(new Salary(Salary.MINIMUM_VALUE), Kind.INCLUSIVE);
 	}

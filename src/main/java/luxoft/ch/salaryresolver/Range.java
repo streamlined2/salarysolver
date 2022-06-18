@@ -32,7 +32,7 @@ public class Range {
 
 	private int compareMinimum(Salary salary, Relation relation) {
 		Salary minimalSalary = minimum.getMinimalSalary();
-		if (Relation.isStrict(relation)) {
+		if (relation.isStrict()) {
 			return minimalSalary.compareTo(salary.getGreaterBy(1));
 		} else {
 			return minimalSalary.compareTo(salary);
@@ -51,7 +51,7 @@ public class Range {
 
 	private int compareMaximum(Salary salary, Relation relation) {
 		Salary maximalSalary = maximum.getMaximalSalary();
-		if (Relation.isStrict(relation)) {
+		if (relation.isStrict()) {
 			return maximalSalary.compareTo(salary.getLesserBy(1));
 		} else {
 			return maximalSalary.compareTo(salary);
@@ -76,10 +76,11 @@ public class Range {
 		return "name: %s, salary: %s%s, %s%s".formatted(person.name(), getMinimum().kind().minToString(),
 				getMinimum().toString(), getMaximum().toString(), getMaximum().kind().maxToString());
 	}
-	
+
 	public static void main(String[] args) {
 		Person person = new Person("John Smith");
-		Range range = new Range(person, new Boundary(new Salary(20), Kind.INCLUSIVE), new Boundary(new Salary(100), Kind.INCLUSIVE));
+		Range range = new Range(person, new Boundary(new Salary(20), Kind.INCLUSIVE),
+				new Boundary(new Salary(100), Kind.INCLUSIVE));
 		System.out.println(range);
 		range.upMinimum(new Salary(10), Relation.EQUAL);
 		System.out.println(range);
