@@ -1,30 +1,39 @@
 package luxoft.ch.salaryresolver;
 
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
-public class RangeSet implements Iterable<Range> {
+public class RangeSet {
+
+	private static final Comparator<Range> BY_LENGTH = Comparator.comparing(Range::getLength);
 
 	private final Map<Person, Range> ranges;
 
 	public RangeSet(Set<Person> persons) {
 		ranges = new HashMap<>();
 		for (var person : persons) {
-			ranges.put(person, new Range(person, Boundary.getMinimum(), Boundary.getMaximum()));
+			ranges.put(person, new Range(person));
 		}
-	}
-
-	@Override
-	public Iterator<Range> iterator() {
-		return ranges.values().iterator();
 	}
 
 	private Optional<Range> getRange(Person person) {
 		return Optional.ofNullable(ranges.get(person));
+	}
+
+	public void applySalaryRule(SalaryRule rule) {
+		if (rule.getRelation().affectsMinimum()) {
+			upMinimum(rule);
+		}
+		if (rule.getRelation().affectsMaximum()) {
+			downMaximum(rule);
+		}
 	}
 
 	public void upMinimum(SalaryRule rule) {
@@ -43,13 +52,27 @@ public class RangeSet implements Iterable<Range> {
 		});
 	}
 
-	public void applySalaryRule(SalaryRule rule) {
-		if (rule.getRelation().affectsMinimum()) {
-			upMinimum(rule);
-		}
-		if (rule.getRelation().affectsMaximum()) {
-			downMaximum(rule);
-		}
+	public void applyInterpersonalEqualsRule(Person person, Boundary minimum, Boundary maximum) {
+		setMinimum(person, minimum);
+		setMaximum(person, maximum);
+	}
+
+	public void setMinimum(Person person, Boundary minimum) {
+		getRange(person).ifPresent(range -> {
+			range.setMinimum(minimum);
+			ranges.put(person, range);
+		});
+	}
+
+	public void setMaximum(Person person, Boundary maximum) {
+		getRange(person).ifPresent(range -> {
+			range.setMaximum(maximum);
+			ranges.put(person, range);
+		});
+	}
+
+	public Queue<Range> getRangesByLength() {
+		return ranges.values().stream().collect(Collectors.toCollection(() -> new PriorityQueue<>(BY_LENGTH)));
 	}
 
 	@Override

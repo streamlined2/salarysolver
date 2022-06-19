@@ -10,10 +10,20 @@ public class Range {
 	private Boundary minimum;
 	private Boundary maximum;
 
+	public Range(Person person) {
+		this.person = person;
+		this.minimum = Boundary.getMinimum();
+		this.maximum = Boundary.getMaximum();
+	}
+
 	public Range(Person person, Boundary minimum, Boundary maximum) {
 		this.person = person;
 		this.minimum = minimum;
 		this.maximum = maximum;
+	}
+
+	public int getLength() {
+		return maximum.getMaximalSalary().value() - minimum.getMinimalSalary().value();
 	}
 
 	public Person getPerson() {
@@ -22,6 +32,10 @@ public class Range {
 
 	public Boundary getMinimum() {
 		return minimum;
+	}
+
+	public void setMinimum(Boundary minimum) {
+		this.minimum = minimum;
 	}
 
 	public void upMinimum(Salary salary, Relation relation) {
@@ -41,6 +55,10 @@ public class Range {
 
 	public Boundary getMaximum() {
 		return maximum;
+	}
+
+	public void setMaximum(Boundary maximum) {
+		this.maximum = maximum;
 	}
 
 	public void downMaximum(Salary salary, Relation relation) {
@@ -75,41 +93,6 @@ public class Range {
 	public String toString() {
 		return "name: %s, salary: %s%s, %s%s".formatted(person.name(), getMinimum().kind().minToString(),
 				getMinimum().toString(), getMaximum().toString(), getMaximum().kind().maxToString());
-	}
-
-	public static void main(String[] args) {
-		Person person = new Person("John Smith");
-		Range range = new Range(person, new Boundary(new Salary(20), Kind.INCLUSIVE),
-				new Boundary(new Salary(100), Kind.INCLUSIVE));
-		System.out.println(range);
-		range.upMinimum(new Salary(10), Relation.EQUAL);
-		System.out.println(range);
-		range.upMinimum(new Salary(20), Relation.EQUAL);
-		System.out.println(range);
-		range.upMinimum(new Salary(21), Relation.EQUAL);
-		System.out.println(range);
-		range.upMinimum(new Salary(22), Relation.LESS);
-		System.out.println(range);
-		range.upMinimum(new Salary(23), Relation.LESS_OR_EQUAL);
-		System.out.println(range);
-		range.upMinimum(new Salary(24), Relation.LESS_OR_EQUAL);
-		System.out.println(range);
-		range.upMinimum(new Salary(30), Relation.GREATER);
-		System.out.println(range);
-		range.downMaximum(new Salary(99), Relation.LESS_OR_EQUAL);
-		System.out.println(range);
-		range.downMaximum(new Salary(100), Relation.LESS);
-		System.out.println(range);
-		range.downMaximum(new Salary(99), Relation.LESS);
-		System.out.println(range);
-		range.downMaximum(new Salary(98), Relation.LESS);
-		System.out.println(range);
-		range.downMaximum(new Salary(80), Relation.LESS_OR_EQUAL);
-		System.out.println(range);
-		range.downMaximum(new Salary(85), Relation.LESS_OR_EQUAL);
-		System.out.println(range);
-		range.downMaximum(new Salary(70), Relation.LESS);
-		System.out.println(range);
 	}
 
 }
