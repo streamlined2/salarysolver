@@ -22,7 +22,7 @@ public class RuleSet {
 	public Stream<SalaryRule> getSalaryRules() {
 		return rules.stream().filter(SalaryRule.class::isInstance).map(SalaryRule.class::cast);
 	}
-	
+
 	public Set<Person> getRelatedPersons() {
 		return rules.stream().flatMap(Rule::getRelatedPersons).collect(Collectors.toSet());
 	}
@@ -30,6 +30,11 @@ public class RuleSet {
 	public Stream<InterpersonalRule> getEqualityRulesFor(Person person) {
 		return rules.stream().filter(InterpersonalRule.class::isInstance).map(InterpersonalRule.class::cast).filter(
 				rule -> rule.getRelation() == Relation.EQUAL && rule.getRelatedPersons().anyMatch(person::equals));
+	}
+
+	public Stream<InterpersonalRule> getComparisonRulesFor(Person person) {
+		return rules.stream().filter(InterpersonalRule.class::isInstance).map(InterpersonalRule.class::cast)
+				.filter(rule -> rule.getRelation() != Relation.EQUAL && rule.getPerson().equals(person));
 	}
 
 }

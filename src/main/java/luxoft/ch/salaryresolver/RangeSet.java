@@ -2,6 +2,7 @@ package luxoft.ch.salaryresolver;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.PriorityQueue;
@@ -10,7 +11,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-public class RangeSet {
+public class RangeSet implements Iterable<Range> {
 
 	private static final Comparator<Range> BY_LENGTH = Comparator.comparing(Range::getLength);
 
@@ -23,7 +24,16 @@ public class RangeSet {
 		}
 	}
 
-	private Optional<Range> getRange(Person person) {
+	public boolean isValid() {
+		for (var range : this) {
+			if (!range.isValid()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public Optional<Range> getRange(Person person) {
 		return Optional.ofNullable(ranges.get(person));
 	}
 
@@ -71,6 +81,29 @@ public class RangeSet {
 		});
 	}
 
+	public void applyInterpersonalCompareRule(InterpersonalRule rule) {
+		getRange(rule.getAnotherPerson()).ifPresent(range -> {
+			upMinimum(rule, range.getMinimum());
+			downMaximum(rule, range.getMaximum());
+		});
+	}
+
+	public void upMinimum(InterpersonalRule rule, Boundary minimum) {
+		Person person = rule.getPerson();
+		getRange(person).ifPresent(range -> {
+			range.upMinimum(minimum.value(), rule.getRelation());
+			ranges.put(person, range);
+		});
+	}
+
+	public void downMaximum(InterpersonalRule rule, Boundary maximum) {
+		Person person = rule.getPerson();
+		getRange(person).ifPresent(range -> {
+			range.downMaximum(maximum.value(), rule.getRelation());
+			ranges.put(person, range);
+		});
+	}
+
 	public Queue<Range> getRangesByLength() {
 		return ranges.values().stream().collect(Collectors.toCollection(() -> new PriorityQueue<>(BY_LENGTH)));
 	}
@@ -80,6 +113,11 @@ public class RangeSet {
 		StringJoiner join = new StringJoiner("\n");
 		ranges.forEach((person, range) -> join.add(range.toString()));
 		return join.toString();
+	}
+
+	@Override
+	public Iterator<Range> iterator() {
+		return ranges.values().iterator();
 	}
 
 }

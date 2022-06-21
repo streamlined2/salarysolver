@@ -22,6 +22,10 @@ public class Range {
 		this.maximum = maximum;
 	}
 
+	public boolean isValid() {
+		return getLength() > 0;
+	}
+
 	public int getLength() {
 		return maximum.getMaximalSalary().value() - minimum.getMinimalSalary().value();
 	}
