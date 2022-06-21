@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import luxoft.ch.salaryresolver.Boundary.Kind;
+
 public class RangeSet implements Iterable<Range> {
 
 	private static final Comparator<Range> BY_LENGTH = Comparator.comparing(Range::getLength);
@@ -81,27 +83,37 @@ public class RangeSet implements Iterable<Range> {
 		});
 	}
 
-	public void applyInterpersonalCompareRule(InterpersonalRule rule) {
+	public void applyInterpersonalCompareRule(InterpersonalRule rule, Range sampleRange) {
 		getRange(rule.getAnotherPerson()).ifPresent(range -> {
-			upMinimum(rule, range.getMinimum());
-			downMaximum(rule, range.getMaximum());
+			upMinimum(range, rule, newMinimum(sampleRange.getMinimum(), rule.getRelation()));
+			downMaximum(range, rule, newMaximum(sampleRange.getMaximum(), rule.getRelation()));
 		});
 	}
 
-	public void upMinimum(InterpersonalRule rule, Boundary minimum) {
-		Person person = rule.getPerson();
-		getRange(person).ifPresent(range -> {
-			range.upMinimum(minimum.value(), rule.getRelation());
-			ranges.put(person, range);
-		});
+	private static Boundary newMinimum(Boundary minimum, Relation relation) {
+		if (relation.isStrict()) {
+			return minimum.getGreaterBy(1);
+		} else {
+			return minimum;
+		}
 	}
 
-	public void downMaximum(InterpersonalRule rule, Boundary maximum) {
-		Person person = rule.getPerson();
-		getRange(person).ifPresent(range -> {
-			range.downMaximum(maximum.value(), rule.getRelation());
-			ranges.put(person, range);
-		});
+	private static Boundary newMaximum(Boundary maximum, Relation relation) {
+		if (relation.isStrict()) {
+			return maximum.getGreaterBy(1);
+		} else {
+			return maximum;
+		}
+	}
+
+	public void upMinimum(Range range, InterpersonalRule rule, Boundary minimum) {
+		range.upMinimum(minimum.value(), rule.getRelation());
+		ranges.put(range.getPerson(), range);
+	}
+
+	public void downMaximum(Range range, InterpersonalRule rule, Boundary maximum) {
+		range.downMaximum(maximum.value(), rule.getRelation());
+		ranges.put(range.getPerson(), range);
 	}
 
 	public Queue<Range> getRangesByLength() {

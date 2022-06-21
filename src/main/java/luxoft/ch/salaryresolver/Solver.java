@@ -69,7 +69,7 @@ public class Solver {
 		boolean changed = comparisonRules.addAll(personRules);
 		if (changed) {
 			for (var rule : personRules) {
-				rangeSet.applyInterpersonalCompareRule(rule);
+				rangeSet.applyInterpersonalCompareRule(rule, range);
 			}
 			for (var relatedPerson : getPersonsFor(personRules)) {
 				Optional<Range> relatedRange = rangeSet.getRange(relatedPerson);
@@ -83,6 +83,9 @@ public class Solver {
 	public static void main(String... args) {
 
 		Solver solver = new Solver(
+				new InterpersonalRule("Michael", LESS, "Louis"),
+				new InterpersonalRule("Louis", LESS, "Cliff"),
+				new InterpersonalRule("Cliff", LESS, "Maria"),
 				new InterpersonalRule("Maria", LESS, "Andrew"),
 				new InterpersonalRule("Andrew", EQUAL, "Nigel"),
 				new InterpersonalRule("Nigel", EQUAL, "Christopher"),

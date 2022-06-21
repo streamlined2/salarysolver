@@ -75,19 +75,13 @@ public record Boundary(Salary value, Kind kind) {
 	public static Boundary getMaximum() {
 		return new Boundary(new Salary(Salary.MAXIMUM_VALUE), Kind.INCLUSIVE);
 	}
-
-	public Boundary getAdjacentMinimumFor(Relation relation) {
-		if (relation.isStrict()) {
-			return new Boundary(value().getGreaterBy(1), kind());
-		}
-		return this;
+	
+	public Boundary getGreaterBy(int delta) {
+		return new Boundary(value().getGreaterBy(delta), kind());
 	}
 
-	public Boundary getAdjacentMaximumFor(Relation relation) {
-		if (relation.isStrict()) {
-			return new Boundary(value().getGreaterBy(1), kind());
-		}
-		return this;
+	public Boundary getLesserBy(int delta) {
+		return new Boundary(value().getLesserBy(delta), kind());
 	}
 
 }

@@ -7,11 +7,10 @@ public record Salary(Integer value) implements Comparable<Salary> {
 
 	public Salary {
 		if (value < MINIMUM_VALUE) {
-			throw new IllegalArgumentException(
-					"salary %d must be greater or equal to %d".formatted(value, MINIMUM_VALUE));
+			value = MINIMUM_VALUE;
 		}
 		if (value > MAXIMUM_VALUE) {
-			throw new IllegalArgumentException("salary %d must be less or equal to %d".formatted(value, MAXIMUM_VALUE));
+			value = MAXIMUM_VALUE;
 		}
 	}
 
